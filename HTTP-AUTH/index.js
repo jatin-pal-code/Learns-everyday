@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+const jwt = require("jsonwebtoken");
+const jwt_secret = 
 
 const users = [];
 app.use(express.json());
@@ -116,6 +118,26 @@ app.post("/signin", (req, res) => {
   console.log(users);
 });
 
+app.get("/me", (req, res) => {
+  const token = req.headers.token;
+
+  let foundUser = null;
+  for (let i = 0; i < users.length; i++) {
+    if (users[i].token === token) {
+      foundUser = users[i];
+    }
+  }
+  if (foundUser) {
+    res.json({
+      username: foundUser.username,
+      password: foundUser.password,
+    });
+  } else {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+  }
+});
 
 app.listen(3000, () => {
   console.log("App listening on port 3000!");
